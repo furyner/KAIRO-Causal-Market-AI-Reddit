@@ -1,75 +1,20 @@
-# KAIRO Causal Market AI — Reddit API Integration
+# KAIRO Causal Market AI — Reddit Read-Only Integration
 
-This repository contains public documentation for the planned Reddit Data API integration used by **KAIRO Causal Market AI**.
+This repository contains the public, auditable implementation and data-handling documentation for the planned Reddit Data API connector used by **KAIRO Causal Market AI**.
 
-The production application is maintained separately. This public repository exists to document how Reddit data will be accessed, processed, and used.
+The Reddit connector is intentionally narrow. It is designed for a **single-user, non-commercial, local desktop application** and is disabled unless official Reddit API authorization has been granted.
 
-## About the project
+## Purpose
 
-**KAIRO Causal Market AI** is a local Python desktop application for evidence-based market intelligence and causal analysis.
+KAIRO Causal Market AI is a local Python desktop application used to organize financial-market and macroeconomic information from multiple independently authorized sources.
 
-The application combines information from several independent data sources and tries to answer questions in the following form:
+The Reddit integration has one limited purpose: **show recent public market-related submissions from a small predefined set of public subreddits so the user can discover and open the original discussion on Reddit.**
 
-```text
-WHAT HAPPENED
-    ↓
-WHY IT MAY MATTER
-    ↓
-MARKET REACTION
-    ↓
-POSSIBLE CAUSAL MECHANISM
-    ↓
-ALTERNATIVE EXPLANATIONS
-    ↓
-WHAT WOULD INVALIDATE THE INTERPRETATION
-```
+Reddit content is not treated as authoritative evidence of an external event.
 
-The project is designed for market research and monitoring. It does not place real financial-market orders.
+## Initial Reddit scope
 
-## Application architecture
-
-KAIRO is primarily a Python application built around:
-
-- PySide6 desktop UI;
-- local FastAPI backend;
-- asynchronous external-data connectors;
-- SQLite/WAL local persistence;
-- source provenance tracking;
-- news quality and deduplication;
-- event extraction;
-- market-data quality validation;
-- event-reaction analysis;
-- causal graph analysis;
-- evidence retrieval and analytical reporting.
-
-The application processes market and macroeconomic information from supported APIs and machine-readable feeds. Existing source categories include official government and central-bank publications, economic-data APIs, financial-market data, news indexes, YouTube Data API, and Telegram's official API.
-
-Reddit is planned as an additional public social-discussion source.
-
-## Purpose of the Reddit integration
-
-The Reddit integration will be used to retrieve relevant **public discussions about financial markets, macroeconomics, commodities, and geopolitical events that may affect markets**.
-
-Reddit content will be treated as a social signal and discussion source, not as an authoritative source of factual information.
-
-Example topics include:
-
-- Federal Reserve decisions;
-- inflation and CPI releases;
-- employment and NFP reports;
-- Treasury yields;
-- foreign exchange markets;
-- gold and precious metals;
-- crude oil and energy markets;
-- stock indices and equities;
-- geopolitical events affecting financial markets;
-- changes in public market sentiment.
-
-Public Reddit discussions may be displayed and analyzed together with independent market, economic, official, and news data.
-
-## Intended subreddits
-
-Initial public communities may include:
+The connector is restricted to these public communities:
 
 - `r/Forex`
 - `r/Daytrading`
@@ -77,139 +22,181 @@ Initial public communities may include:
 - `r/investing`
 - `r/StockMarket`
 
-Additional public communities may be added when they are relevant to the same market-research purpose.
+The initial implementation retrieves only recent public submissions from the `new` listing.
 
-## Reddit data that may be accessed
+It does **not** crawl arbitrary subreddits or perform historical bulk collection.
 
-The application intends to use Reddit's official OAuth/Data API to retrieve publicly available information such as:
+## Data accessed
 
+The connector requests only the fields required for a small local reading/discovery view:
+
+- submission ID;
 - subreddit name;
-- post ID;
-- post title;
-- public post body;
-- post creation timestamp;
-- permalink or canonical Reddit URL;
-- public score and engagement metadata;
-- public comments relevant to a selected discussion;
-- comment timestamps;
-- public identifiers required to process the API response.
+- submission title;
+- creation timestamp;
+- Reddit permalink;
+- public score/engagement count required for display.
 
-Only information made available through officially authorized Reddit API endpoints will be used.
+The initial connector does **not** retrieve or persist:
 
-## Read-only usage
+- private Reddit data;
+- private messages or chats;
+- user profile data;
+- user history;
+- email addresses;
+- IP addresses;
+- moderator-only information;
+- subscriber lists;
+- comment bodies;
+- submission author profiles;
+- sensitive user attributes.
 
-The initial Reddit integration is intended to operate in **read-only mode**.
+## Read-only behavior
 
-The application is not designed to automatically:
+The connector does not:
 
 - create posts;
 - create comments;
-- send private messages or chat messages;
-- upvote or downvote content;
-- manipulate engagement;
-- mass-follow Reddit users;
-- perform automated moderation actions;
-- bypass subreddit restrictions;
-- bypass Reddit authentication;
-- scrape private information;
-- use unauthorized HTML scraping as a substitute for the Reddit API.
+- vote;
+- send messages;
+- follow users;
+- perform moderation actions;
+- automate engagement;
+- access private communities;
+- bypass authentication;
+- bypass rate limits;
+- use HTML scraping as a substitute for the authorized Reddit API.
 
-## Example processing flow
+## No user profiling
 
-```mermaid
-flowchart LR
-    A[Reddit Data API] --> B[Read-only Reddit Connector]
-    B --> C[Normalization]
-    C --> D[Market Relevance Filtering]
-    D --> E[Deduplication]
-    E --> F[Local Storage]
-    F --> G[Evidence and Event Analysis]
-    G --> H[KAIRO Desktop Interface]
-```
+The Reddit integration does not build profiles of Reddit users.
 
-A Reddit post or comment by itself is not treated as proof that an external event occurred.
+It does not attempt to infer or classify an individual's:
 
-## Source provenance
+- political beliefs;
+- financial condition;
+- health information;
+- race or ethnicity;
+- religion;
+- sexual orientation;
+- other sensitive personal characteristics.
 
-KAIRO is designed to preserve source provenance for information used in analysis.
+The analytical focus is on public market topics, not on individual Redditors.
 
-Where applicable, a Reddit observation will retain the corresponding Reddit URL or public identifier so the original public discussion can be referenced.
+## AI / machine-learning restriction
 
-Social-media observations remain distinguishable from primary official sources and established news sources. A social-media claim is not automatically converted into a verified fact.
+Reddit content retrieved by this connector is **not used to train, fine-tune, benchmark, or evaluate AI or machine-learning models**.
 
-## How Reddit data will be processed
+The connector also does not send stored Reddit content to third-party LLM services and does not place Reddit content into an embeddings or vector database.
 
-Reddit data may be used to:
+The implementation exposes a deliberately limited display record for the local Reddit reading view and the original Reddit permalink.
 
-1. identify market-related public discussions;
-2. filter irrelevant content from the analytical pipeline;
-3. detect duplicated or substantially overlapping discussions;
-4. associate discussions with relevant financial assets or macroeconomic topics;
-5. compare public discussion with independent news, economic, official, and market data;
-6. display relevant evidence in the local KAIRO desktop interface.
+KAIRO may use AI functionality with other independently licensed or authorized data sources, but this Reddit connector is separated from those pipelines.
 
-The purpose is market research and information organization.
+## Local retention
 
-## User profiling and private data
+Reddit data is stored only in a temporary local cache.
 
-The Reddit integration is not intended to build personal profiles of individual Reddit users.
+- maximum cache TTL: **24 hours**;
+- expired records are removed automatically;
+- the connector does not create a historical Reddit archive;
+- source provenance is preserved using the Reddit submission ID and permalink;
+- if Reddit access is disabled, no new Reddit content is collected.
 
-The analytical focus is on public market discussions and events, not on identifying sensitive attributes of Reddit users.
+See [DATA_HANDLING.md](DATA_HANDLING.md) and [PRIVACY.md](PRIVACY.md).
 
-Private Reddit data is not required for this use case.
+## Rate limits and data budget
 
-## No unauthorized Reddit scraping
+This implementation deliberately applies limits below Reddit's published platform limits:
 
-KAIRO will not use unauthorized HTML scraping as a replacement for official Reddit API access.
+- application limit: **5 requests per minute**;
+- planned daily budget: **less than 1,000 Reddit API requests per day**;
+- no bulk exports;
+- no historical crawling;
+- no multi-account sharding or rate-limit circumvention.
 
-The integration is specifically intended to use Reddit's authorized API and comply with applicable API access restrictions and rate limits.
+The connector also respects Reddit API responses and rate-limit errors.
 
-If authorized API access is unavailable, Reddit ingestion will remain disabled.
+## Reddit attribution
 
-## Why Devvit is not suitable for this application
+Every displayed record retains a Reddit permalink so the user can open the original discussion on Reddit.
 
-KAIRO Causal Market AI is a standalone desktop application whose main processing environment operates outside Reddit.
+Reddit remains clearly identified as the source. The application does not present Reddit content as its own publication.
 
-The application needs to combine Reddit observations with independent external datasets, including:
+## Why Devvit is not the requested execution environment
 
-- financial-market data;
-- economic statistics;
-- official government and central-bank publications;
-- financial news and news indexes;
-- other authorized social and media APIs.
+KAIRO is an existing standalone Python desktop program built around a local PySide6 interface and local backend. Its user interface, local cache, and non-Reddit data connectors execute on the user's computer.
 
-The ingestion pipeline, local database, analytical engines, causal graph, and user interface all operate in the external Python application.
+It is not a subreddit application, interactive Reddit post, moderation tool, or Reddit-hosted experience.
 
-KAIRO is therefore not an embedded Reddit experience, subreddit application, or moderation tool.
+The requested integration therefore requires narrowly scoped, authenticated, read-only access for an external local application. If Reddit determines that a different developer product is required, the connector will remain disabled until the appropriate authorization is available.
 
-External OAuth/Data API access is required so the local backend can retrieve authorized public Reddit data and process it together with the application's other evidence sources.
+## Security
 
-## API credentials
-
-Reddit credentials will be provided to the application through environment variables:
+Credentials are supplied through environment variables and are never committed to source control.
 
 ```env
 REDDIT_CLIENT_ID=
 REDDIT_CLIENT_SECRET=
+REDDIT_USER_AGENT=
+REDDIT_API_ENABLED=false
 ```
 
-Credentials and other secrets are not committed to source control.
+`REDDIT_API_ENABLED` defaults to `false`.
+
+## Repository files
+
+- `reddit_connector.py` — read-only OAuth connector with subreddit allowlist and application-level rate limiting;
+- `retention.py` — temporary SQLite cache with a hard 24-hour TTL;
+- `.env.example` — example configuration with access disabled by default;
+- `DATA_HANDLING.md` — exact data lifecycle and restrictions;
+- `PRIVACY.md` — privacy commitments for the Reddit integration;
+- `requirements.txt` — minimal Python dependency list.
+
+## Example flow
+
+```text
+Authorized Reddit Data API
+        |
+        v
+Read-only connector
+        |
+        v
+Fixed subreddit allowlist
+        |
+        v
+Minimal field extraction
+        |
+        v
+24-hour local cache
+        |
+        v
+Local Reddit reading view
+        |
+        +----> Original Reddit permalink
+```
+
+There is no Reddit-to-LLM, Reddit-to-training, Reddit-to-embeddings, automated posting, or user-profiling path in this connector.
 
 ## Current status
 
-The Reddit connector is currently **planned and disabled pending official Reddit API authorization**.
+The connector is **disabled pending official Reddit API authorization**.
 
-The application does not attempt to bypass the requirement for approved API access.
-
-After authorization, the connector will be implemented using Reddit's officially supported authentication and API mechanisms.
+If authorization is not granted, Reddit ingestion remains disabled. The project does not attempt to replace denied API access with unauthorized scraping or another circumvention method.
 
 ## Project summary
 
 - **Application:** KAIRO Causal Market AI
-- **Repository purpose:** Public documentation for Reddit API integration
-- **Platform:** Local desktop application
-- **Primary language:** Python
-- **Backend:** FastAPI
-- **Reddit access model:** OAuth / official Reddit Data API
-- **Initial access:** Read-only
-- **Primary use case:** Financial-market and macroeconomic research
+- **Integration:** Reddit read-only public-submission discovery
+- **Platform:** local Python desktop application
+- **Access model:** official Reddit OAuth / Data API only
+- **Users:** single user
+- **Commercial status of this integration:** non-commercial
+- **Writes to Reddit:** none
+- **User profiling:** none
+- **Comments:** not accessed in the initial scope
+- **Cache TTL:** 24 hours
+- **Application rate limit:** 5 requests/minute
+- **Planned daily budget:** <1,000 requests/day
+- **AI training/fine-tuning with Reddit data:** prohibited
+- **Third-party LLM processing of Reddit data:** prohibited
