@@ -1,0 +1,8 @@
+.env
+reddit_cache.sqlite3
+reddit_cache.sqlite3-shm
+reddit_cache.sqlite3-wal
+__pycache__/
+*.pyc
+.venv/
+venv/
